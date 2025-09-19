@@ -15,8 +15,7 @@ public class SushiService {
         this.repository = repository;
     }
 
-    public List<Sushi> findAll() {
-        return repository.findAll();
+    public List<Sushi> findAll() {return repository.findAll();
     }
 
     public Sushi save(Sushi s) {

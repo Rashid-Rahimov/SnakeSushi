@@ -4,19 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
-
-@Table(name = "menu")
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
 @Entity
+@Table(name = "menu")
+@Data
 public class Sushi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private double price;
+    private Double price;
 
     public Sushi() {
     }

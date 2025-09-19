@@ -7,7 +7,8 @@ import com.example.snakesushi.service.SushiService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/menu")  
+@RequestMapping("/menu")
+@CrossOrigin(origins = "*")
 public class SushiController {
 
     private final SushiService service;
