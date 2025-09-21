@@ -1,6 +1,7 @@
 package com.example.snakesushi.Controller;
 
 import com.example.snakesushi.Repository.AdminRepository;
+import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
 import com.example.snakesushi.service.AdminService;
 import jakarta.servlet.http.HttpSession;
@@ -17,17 +18,16 @@ public class AdminController {
 
 
     @PostMapping("/login")
-    public String login(
-            @RequestParam String username,
-            @RequestParam String password,
+    public boolean login(
+            @RequestBody Admin admin,
             HttpSession session) {
 
-        return adminService.login(username, password, session);
+        return adminService.login(admin, session);
 
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
+    public boolean logout(HttpSession session) {
         return adminService.logout(session);
     }
 
@@ -42,8 +42,8 @@ public class AdminController {
     }
 
     @DeleteMapping
-    public void deleteById(@RequestParam Long id, HttpSession session) {
-        adminService.deleteById(id, session);
+    public boolean deleteById(@RequestParam Long id, HttpSession session) {
+        return adminService.deleteById(id, session);
     }
 
     @PutMapping

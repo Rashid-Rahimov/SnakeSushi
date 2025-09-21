@@ -14,6 +14,7 @@ public class Sushi {
     private String name;
     private Double price;
     private String seasoning;
+    private String imagePath;
 
 
     @Override
@@ -25,7 +26,7 @@ public class Sushi {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price);
+        return Objects.hash(id);
     }
 }
 

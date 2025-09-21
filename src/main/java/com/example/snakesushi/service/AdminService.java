@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -16,62 +17,62 @@ import java.util.List;
 public class AdminService {
     private final AdminRepository adminRepository;
     private final SushiRepository sushiRepository;
-    private final HttpSession httpSession;
 
 
-    public String login(
-            @RequestParam String username,
-            @RequestParam String password,
+    public boolean login(
+            Admin admin,
             HttpSession session) {
 
-        Admin admin = adminRepository.findAdminByNick(username);
+        Admin adminDB = adminRepository.findAdminByNick(admin.getNick());
 
-        if (admin == null) {
-            return "Yanlis nick";
+        if (adminDB == null) {
+            return false;
         }
 
-        if (admin.getPassword().equals(password)) {
-            session.setAttribute("admin", username);
-            return "Succesful";
+        if (admin.getPassword().equals(adminDB.getPassword())) {
+            session.setAttribute("admin", adminDB.getNick());
+            return true;
         } else {
-            return "Yanlis mesaj ua da sifre";
+            return false;
         }
 
     }
 
-    public String logout(HttpSession session) {
+    public boolean logout(HttpSession session) {
         session.invalidate();
-        return "Hesabdan çıxıldı";
+        return true;
     }
 
 
     public List<Sushi> findAll(HttpSession session) {
         String admin = (String) session.getAttribute("admin");
         if (admin != null) {
-            sushiRepository.findAll();
+            return sushiRepository.findAll();
+        }
+        return Collections.emptyList();
+    }
+
+
+    public Sushi addSushi(Sushi sushi, HttpSession session) {
+        String admin = (String) session.getAttribute("admin");
+        if (admin != null) {
+            return sushiRepository.save(sushi);
         }
         return null;
     }
 
 
-    public Sushi addSushi(@RequestBody Sushi sushi, HttpSession session) {
+    public boolean deleteById(Long id, HttpSession session) {
         String admin = (String) session.getAttribute("admin");
-        if (admin != null) {
-            sushiRepository.save(sushi);
-        }
-        return null;
-    }
-
-
-    public void deleteById(@RequestParam Long id, HttpSession session) {
-        String admin = (String) session.getAttribute("admin");
-        if (admin != null) {
+        if (admin != null && sushiRepository.existsById(id)) {
             sushiRepository.deleteById(id);
+            return true;
         }
+        return false;
     }
 
 
-    public Sushi uptadeSushi(@RequestBody Sushi sushi, @RequestParam Long id, HttpSession session) {
+    public Sushi uptadeSushi(Sushi sushi, Long id, HttpSession session) {
         String admin = (String) session.getAttribute("admin");
         if (admin != null && sushiRepository.existsById(id)) {
             Sushi nSushi = sushiRepository.findById(id).get();
