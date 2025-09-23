@@ -6,9 +6,11 @@ import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +24,8 @@ import java.util.List;
 public class AdminService {
     private final AdminRepository adminRepository;
     private final SushiRepository sushiRepository;
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
 
     public boolean login(
@@ -59,15 +63,16 @@ public class AdminService {
 
 
     public Sushi addSushi(Sushi sushi, MultipartFile imageFile, HttpSession session) throws IOException {
-//        String admin = (String) session.getAttribute("admin");
-//        if (admin != null) {
+        String admin = (String) session.getAttribute("admin");
+        if (admin != null) {
             if (imageFile != null && !imageFile.isEmpty()) {
                 String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-                Path uploadPath = Paths.get("C:\\Users\\user\\IdeaProjects\\SnakeSushi\\images");
+                Path uploadPath = Paths.get(uploadDir);
                 Path filePath = uploadPath.resolve(fileName);
                 Files.write(filePath, imageFile.getBytes());
-                sushi.setImagePath(filePath.toString());
-//        }
+
+                sushi.setImagePath("/images/" + fileName);
+        }
         return sushiRepository.save(sushi);
         }
         return null;
