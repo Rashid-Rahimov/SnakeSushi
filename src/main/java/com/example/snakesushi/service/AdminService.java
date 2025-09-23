@@ -108,5 +108,11 @@ public class AdminService {
         return null;
     }
 
+    private void deleteImg (String img) {
+
+
+
+    }
+
 
 }

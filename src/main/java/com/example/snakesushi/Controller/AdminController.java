@@ -4,6 +4,7 @@ import com.example.snakesushi.Repository.AdminRepository;
 import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
 import com.example.snakesushi.service.AdminService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -39,12 +40,15 @@ public class AdminController {
         return adminService.findAll(session);
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Sushi addSushi(@RequestPart("sushi") Sushi sushi,
+    @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Sushi addSushi(@RequestPart("sushi") String sushiJson,
                           @RequestPart(value = "image", required = false) MultipartFile imageFile,
                           HttpSession session) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Sushi sushi = mapper.readValue(sushiJson, Sushi.class);
         return adminService.addSushi(sushi, imageFile, session);
     }
+
 
     @DeleteMapping
     public boolean deleteById(@RequestParam Long id, HttpSession session) {
