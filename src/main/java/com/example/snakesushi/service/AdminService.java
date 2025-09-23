@@ -7,6 +7,7 @@ import com.example.snakesushi.model.Sushi;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,18 +64,15 @@ public class AdminService {
     }
 
 
-    public Sushi addSushi(Sushi sushi, MultipartFile imageFile, HttpSession session) throws IOException {
+    public Sushi addSushi(Sushi sushi, MultipartFile imageFile, HttpSession session) {
         String admin = (String) session.getAttribute("admin");
         if (admin != null) {
             if (imageFile != null && !imageFile.isEmpty()) {
-                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-                Path uploadPath = Paths.get(uploadDir);
-                Path filePath = uploadPath.resolve(fileName);
-                Files.write(filePath, imageFile.getBytes());
+                String imgName = addImage(imageFile);
 
-                sushi.setImagePath("/images/" + fileName);
-        }
-        return sushiRepository.save(sushi);
+                sushi.setImagePath("/images/" + imgName);
+            }
+            return sushiRepository.save(sushi);
         }
         return null;
     }
@@ -81,7 +80,10 @@ public class AdminService {
 
     public boolean deleteById(Long id, HttpSession session) {
         String admin = (String) session.getAttribute("admin");
+
         if (admin != null && sushiRepository.existsById(id)) {
+            Sushi sushi = sushiRepository.findById(id).get();
+            deleteImg(sushi.getImagePath());
             sushiRepository.deleteById(id);
             return true;
         }
@@ -89,28 +91,66 @@ public class AdminService {
     }
 
 
-    public Sushi uptadeSushi(Sushi sushi, Long id, HttpSession session) {
+    public Sushi uptadeSushi(Sushi sushi, MultipartFile imageFile,
+                             Long id, HttpSession session) {
+
         String admin = (String) session.getAttribute("admin");
         if (admin != null && sushiRepository.existsById(id)) {
-            Sushi nSushi = sushiRepository.findById(id).get();
-            if (sushi.getName() != null) {
+            Optional<Sushi> optionalSushi = sushiRepository.findById(id);
+            if (optionalSushi.isEmpty()) {
+                return null;
+            }
+            Sushi nSushi = optionalSushi.get();
+
+            if (sushi.getName() != null && !sushi.getName().isBlank()) {
                 nSushi.setName(sushi.getName());
             }
             if (sushi.getPrice() != null) {
                 nSushi.setPrice(sushi.getPrice());
             }
-            if (sushi.getSeasoning() != null) {
+            if (sushi.getSeasoning() != null && !sushi.getSeasoning().isBlank()) {
                 nSushi.setSeasoning(sushi.getSeasoning());
             }
-
+            if (sushi.getType() != null && !sushi.getType().isBlank()) {
+                nSushi.setType(sushi.getType());
+            }
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imgName = addImage(imageFile);
+                if (imgName != null) {
+                    try {
+                        deleteImg(nSushi.getImagePath());
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    nSushi.setImagePath("/images/" + imgName);
+                }
+            }
             return sushiRepository.save(nSushi);
         }
         return null;
     }
 
-    private void deleteImg (String img) {
 
+    private void deleteImg(String img) {
+        String fileName = Paths.get(img).getFileName().toString(); // "sushi.jpg"
+        Path filePath = Paths.get(uploadDir).resolve(fileName);
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private String addImage(MultipartFile imageFile) {
+        String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+        Path uploadPath = Paths.get(uploadDir);
+        Path filePath = uploadPath.resolve(fileName);
+        try {
+            Files.write(filePath, imageFile.getBytes());
+            return fileName;
+        } catch (IOException e) {
+            return null;
+        }
 
     }
 

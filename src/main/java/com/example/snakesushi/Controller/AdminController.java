@@ -4,6 +4,7 @@ import com.example.snakesushi.Repository.AdminRepository;
 import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
 import com.example.snakesushi.service.AdminService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -40,12 +41,11 @@ public class AdminController {
         return adminService.findAll(session);
     }
 
-    @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Sushi addSushi(@RequestPart("sushi") String sushiJson,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Sushi addSushi(@RequestPart("sushi") Sushi sushi,
                           @RequestPart(value = "image", required = false) MultipartFile imageFile,
-                          HttpSession session) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        Sushi sushi = mapper.readValue(sushiJson, Sushi.class);
+                          HttpSession session)  {
+
         return adminService.addSushi(sushi, imageFile, session);
     }
 
@@ -55,9 +55,13 @@ public class AdminController {
         return adminService.deleteById(id, session);
     }
 
-    @PutMapping
-    public Sushi uptadeSushi(@RequestBody Sushi sushi, @RequestParam Long id, HttpSession session) {
-        return adminService.uptadeSushi(sushi, id, session);
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Sushi uptadeSushi(@RequestPart("sushi") Sushi sushi,
+                             @RequestPart(value = "image", required = false) MultipartFile imageFile,
+                             @RequestPart ("id") Long id,
+                             HttpSession session) {
+
+        return adminService.uptadeSushi(sushi,imageFile, id, session);
     }
 
 
