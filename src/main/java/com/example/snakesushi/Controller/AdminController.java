@@ -6,8 +6,11 @@ import com.example.snakesushi.model.Sushi;
 import com.example.snakesushi.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -36,9 +39,11 @@ public class AdminController {
         return adminService.findAll(session);
     }
 
-    @PostMapping
-    public Sushi addCustomer(@RequestBody Sushi sushi, HttpSession session) {
-        return adminService.addSushi(sushi, session);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Sushi addSushi(@RequestPart("sushi") Sushi sushi,
+                          @RequestPart(value = "image", required = false) MultipartFile imageFile,
+                          HttpSession session) throws IOException {
+        return adminService.addSushi(sushi, imageFile, session);
     }
 
     @DeleteMapping

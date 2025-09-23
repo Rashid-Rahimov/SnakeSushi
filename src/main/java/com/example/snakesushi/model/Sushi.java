@@ -15,6 +15,7 @@ public class Sushi {
     private Double price;
     private String seasoning;
     private String imagePath;
+    private String type;
 
 
     @Override

@@ -8,7 +8,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,10 +58,17 @@ public class AdminService {
     }
 
 
-    public Sushi addSushi(Sushi sushi, HttpSession session) {
-        String admin = (String) session.getAttribute("admin");
-        if (admin != null) {
-            return sushiRepository.save(sushi);
+    public Sushi addSushi(Sushi sushi, MultipartFile imageFile, HttpSession session) throws IOException {
+//        String admin = (String) session.getAttribute("admin");
+//        if (admin != null) {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+                Path uploadPath = Paths.get("C:\\Users\\user\\IdeaProjects\\SnakeSushi\\images");
+                Path filePath = uploadPath.resolve(fileName);
+                Files.write(filePath, imageFile.getBytes());
+                sushi.setImagePath(filePath.toString());
+//        }
+        return sushiRepository.save(sushi);
         }
         return null;
     }
