@@ -17,7 +17,6 @@ public class Sushi {
     private String imagePath;
     private String type;
 
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
