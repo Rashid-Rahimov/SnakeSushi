@@ -34,7 +34,7 @@ public class AdminService {
     private String uploadDir;
 
     // 🔐 register
-    public boolean login(Admin admin) {
+    public boolean register(Admin admin) {
         if (adminRepository.findAdminByNick(admin.getNick()) != null) {
             throw new RuntimeException("Admin with this nick already exists!");
         }
@@ -42,6 +42,7 @@ public class AdminService {
         // Password-u BCrypt ilə hash et
         String hashedPassword = passwordEncoder.encode(admin.getPassword());
         admin.setPassword(hashedPassword);
+        admin.setRole(Role.USER);
         adminRepository.save(admin);
         // Admin-i DB-yə save et
         return true;
