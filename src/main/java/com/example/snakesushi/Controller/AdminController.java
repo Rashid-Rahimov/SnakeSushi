@@ -27,9 +27,8 @@ public class AdminController {
     private final AdminService adminService;
     private final AdminRepository adminRepository;
 
-    // 🔓 login açıq
-    @PostMapping("/login")
-    public boolean login(@RequestBody Admin admin) {
+    @PostMapping("/register")
+    public boolean register(@RequestBody Admin admin) {
 
      return adminService.login(admin);
 
