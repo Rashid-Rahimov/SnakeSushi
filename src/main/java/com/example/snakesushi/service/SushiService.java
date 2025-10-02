@@ -2,6 +2,7 @@ package com.example.snakesushi.service;
 
 import com.example.snakesushi.Repository.SushiRepository;
 import com.example.snakesushi.model.Sushi;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

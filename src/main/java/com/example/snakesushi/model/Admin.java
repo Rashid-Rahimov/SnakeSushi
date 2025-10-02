@@ -1,5 +1,6 @@
 package com.example.snakesushi.model;
 
+import com.example.snakesushi.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,4 +13,6 @@ public class Admin {
     private Long id;
     private String nick;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

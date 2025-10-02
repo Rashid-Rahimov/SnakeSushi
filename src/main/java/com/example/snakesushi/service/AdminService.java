@@ -33,7 +33,7 @@ public class AdminService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    // 🔐 Login
+    // 🔐 register
     public boolean login(Admin admin) {
         if (adminRepository.findAdminByNick(admin.getNick()) != null) {
             throw new RuntimeException("Admin with this nick already exists!");
