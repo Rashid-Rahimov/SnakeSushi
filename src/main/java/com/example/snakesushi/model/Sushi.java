@@ -7,6 +7,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "menu")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Sushi {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

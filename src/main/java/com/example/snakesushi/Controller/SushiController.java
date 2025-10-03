@@ -10,8 +10,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/menu")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5501", allowCredentials = "true")
 public class SushiController {
+
     private final SushiService service;
 
     @GetMapping

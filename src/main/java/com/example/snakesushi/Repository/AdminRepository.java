@@ -3,6 +3,9 @@ package com.example.snakesushi.Repository;
 import com.example.snakesushi.model.Admin;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface AdminRepository extends JpaRepository<Admin, Long> {
-    Admin findAdminByNick(String nick);
+
+    Optional<Admin> findByNick(String nick);
 }

@@ -2,15 +2,14 @@ package com.example.snakesushi.service;
 
 import com.example.snakesushi.Repository.AdminRepository;
 import com.example.snakesushi.Repository.SushiRepository;
+import com.example.snakesushi.enums.Role;
 import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -20,7 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +31,9 @@ public class AdminService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    // 🔐 register
+     🔐 register
     public boolean register(Admin admin) {
-        if (adminRepository.findAdminByNick(admin.getNick()) != null) {
+        if (adminRepository.findByNick(admin.getNick()) != null) {
             throw new RuntimeException("Admin with this nick already exists!");
         }
 
@@ -122,5 +120,13 @@ public class AdminService {
         catch (IOException e) { return null; }
         return fileName;
     }
-}
+    public boolean register(Admin admin) {
+        if (adminRepository.findByNick(admin.getNick()) != null) {
+            throw new RuntimeException("Admin with this nick already exists!");
+        }
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        adminRepository.save(admin);
+        return true;
+    }}
+
 

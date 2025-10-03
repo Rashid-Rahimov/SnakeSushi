@@ -34,6 +34,10 @@ public class AdminController {
 
 
     }
+    @PostMapping("/register")
+    public boolean register(@RequestBody Admin admin) {
+        return adminService.register(admin);
+    }
 
     // 🔓 logout açıq
     @PostMapping("/logout")
@@ -76,4 +80,5 @@ public class AdminController {
                              HttpSession session) {
         return adminService.uptadeSushi(sushi, imageFile, id, session);
     }
+
 }
