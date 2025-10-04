@@ -27,17 +27,24 @@ public class AdminController {
     private final AdminService adminService;
     private final AdminRepository adminRepository;
 
+//    @PostMapping("/register")
+//    public boolean register(@RequestBody Admin admin) {
+//
+//     return adminService.login(admin);
+//
+
     @PostMapping("/register")
-    public boolean register(@RequestBody Admin admin) {
-
-     return adminService.login(admin);
-
-
+    public ResponseEntity<String> register(@RequestBody Admin admin) {
+        boolean success = adminService.register(admin);
+        if (success) {
+            return ResponseEntity.ok("Registration successful ✅");
+        }
+        return ResponseEntity.badRequest().body("Registration failed ❌");
     }
-    @PostMapping("/register")
-    public boolean register(@RequestBody Admin admin) {
-        return adminService.register(admin);
-    }
+//    @PostMapping("/register")
+//    public boolean register(@RequestBody Admin admin) {
+//        return adminService.register(admin);
+
 
     // 🔓 logout açıq
     @PostMapping("/logout")

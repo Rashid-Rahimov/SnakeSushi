@@ -31,20 +31,20 @@ public class AdminService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-     🔐 register
-    public boolean register(Admin admin) {
-        if (adminRepository.findByNick(admin.getNick()) != null) {
-            throw new RuntimeException("Admin with this nick already exists!");
-        }
-
-        // Password-u BCrypt ilə hash et
-        String hashedPassword = passwordEncoder.encode(admin.getPassword());
-        admin.setPassword(hashedPassword);
-        admin.setRole(Role.USER);
-        adminRepository.save(admin);
-        // Admin-i DB-yə save et
-        return true;
-    }
+//     🔐 register
+//    public boolean register(Admin admin) {
+//        if (adminRepository.findByNick(admin.getNick()) != null) {
+//            throw new RuntimeException("Admin with this nick already exists!");
+//        }
+//
+//        // Password-u BCrypt ilə hash et
+//        String hashedPassword = passwordEncoder.encode(admin.getPassword());
+//        admin.setPassword(hashedPassword);
+//        admin.setRole(Role.USER);
+//        adminRepository.save(admin);
+//        // Admin-i DB-yə save et
+//        return true;
+//    }
 
     // 🔓 Logout
     public boolean logout(HttpSession session) {
@@ -121,12 +121,21 @@ public class AdminService {
         return fileName;
     }
     public boolean register(Admin admin) {
-        if (adminRepository.findByNick(admin.getNick()) != null) {
-            throw new RuntimeException("Admin with this nick already exists!");
+            if (adminRepository.findByNick(admin.getNick()).isPresent()) {
+                throw new RuntimeException("Admin with this nick already exists!");
+            }
+
+            // Password-u hash et
+            admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+
+            // Default role
+            if (admin.getRole() == null) {
+                admin.setRole(Role.ADMIN);
+            }
+
+            adminRepository.save(admin);
+            return true;
         }
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        adminRepository.save(admin);
-        return true;
-    }}
+    }
 
 
