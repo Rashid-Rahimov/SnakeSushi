@@ -24,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://127.0.0.1:5501", allowCredentials = "true")
 public class AdminController {
-
     private final AdminService adminService;
 
 
@@ -43,7 +42,6 @@ public class AdminController {
         return adminService.findAll();
     }
 
-    // 🔒 yalnız ADMIN əlavə edə bilər
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Sushi addSushi(@RequestPart("sushi") Sushi sushi,
@@ -51,17 +49,15 @@ public class AdminController {
         return adminService.addSushi(sushi, imageFile);
     }
 
-    // 🔒 yalnız ADMIN silə bilər
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping
     public boolean deleteById(@RequestParam Long id) {
         return adminService.deleteById(id);
     }
 
-    // 🔒 yalnız ADMIN update edə bilər
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Sushi uptadeSushi(@RequestPart("sushi") Sushi sushi,
+    public Sushi uptadeSushi(@RequestPart(value = "sushi", required = false) Sushi sushi,
                              @RequestPart(value = "image", required = false) MultipartFile imageFile,
                              @RequestPart("id") Long id) {
         return adminService.uptadeSushi(sushi, imageFile, id);

@@ -52,7 +52,7 @@ public class AdminService {
 
     }
 
-    public boolean deleteById(Long id  ) {
+    public boolean deleteById(Long id) {
         if (sushiRepository.existsById(id)) {
             Sushi sushi = sushiRepository.findById(id).get();
             deleteImg(sushi.getImagePath());
@@ -63,17 +63,19 @@ public class AdminService {
     }
 
     public Sushi uptadeSushi(Sushi sushi, MultipartFile imageFile,
-                             Long id ) {
+                             Long id) {
 
         if (sushiRepository.existsById(id)) {
+
             Sushi nSushi = sushiRepository.findById(id).orElse(null);
             if (nSushi == null) return null;
-
-            if (sushi.getName() != null && !sushi.getName().isBlank()) nSushi.setName(sushi.getName());
-            if (sushi.getPrice() != null) nSushi.setPrice(sushi.getPrice());
-            if (sushi.getSeasoning() != null && !sushi.getSeasoning().isBlank())
-                nSushi.setSeasoning(sushi.getSeasoning());
-            if (sushi.getType() != null && !sushi.getType().isBlank()) nSushi.setType(sushi.getType());
+            if (sushi != null) {
+                if (sushi.getName() != null && !sushi.getName().isBlank()) nSushi.setName(sushi.getName());
+                if (sushi.getPrice() != null) nSushi.setPrice(sushi.getPrice());
+                if (sushi.getSeasoning() != null && !sushi.getSeasoning().isBlank())
+                    nSushi.setSeasoning(sushi.getSeasoning());
+                if (sushi.getType() != null && !sushi.getType().isBlank()) nSushi.setType(sushi.getType());
+            }
 
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imgName = addImage(imageFile);
