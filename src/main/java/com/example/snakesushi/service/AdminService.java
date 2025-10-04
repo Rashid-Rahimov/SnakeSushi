@@ -5,9 +5,12 @@ import com.example.snakesushi.Repository.SushiRepository;
 import com.example.snakesushi.enums.Role;
 import com.example.snakesushi.model.Admin;
 import com.example.snakesushi.model.Sushi;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,48 +34,26 @@ public class AdminService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-//     🔐 register
-//    public boolean register(Admin admin) {
-//        if (adminRepository.findByNick(admin.getNick()) != null) {
-//            throw new RuntimeException("Admin with this nick already exists!");
-//        }
-//
-//        // Password-u BCrypt ilə hash et
-//        String hashedPassword = passwordEncoder.encode(admin.getPassword());
-//        admin.setPassword(hashedPassword);
-//        admin.setRole(Role.USER);
-//        adminRepository.save(admin);
-//        // Admin-i DB-yə save et
-//        return true;
-//    }
 
-    // 🔓 Logout
-    public boolean logout(HttpSession session) {
-        session.invalidate();
-        return true;
+    public List<Sushi> findAll() {
+
+        return sushiRepository.findAll();
+
+
     }
 
-    // 🔒 Session yoxlamalı CRUD
-    public List<Sushi> findAll(HttpSession session) {
-        if (session.getAttribute("admin") != null) {
-            return sushiRepository.findAll();
+    public Sushi addSushi(Sushi sushi, MultipartFile imageFile) {
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imgName = addImage(imageFile);
+            sushi.setImagePath("/images/" + imgName);
         }
-        return Collections.emptyList();
+        return sushiRepository.save(sushi);
+
     }
 
-    public Sushi addSushi(Sushi sushi, MultipartFile imageFile, HttpSession session) {
-        if (session.getAttribute("admin") != null) {
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String imgName = addImage(imageFile);
-                sushi.setImagePath("/images/" + imgName);
-            }
-            return sushiRepository.save(sushi);
-        }
-        return null;
-    }
-
-    public boolean deleteById(Long id, HttpSession session) {
-        if (session.getAttribute("admin") != null && sushiRepository.existsById(id)) {
+    public boolean deleteById(Long id  ) {
+        if (sushiRepository.existsById(id)) {
             Sushi sushi = sushiRepository.findById(id).get();
             deleteImg(sushi.getImagePath());
             sushiRepository.deleteById(id);
@@ -82,15 +63,16 @@ public class AdminService {
     }
 
     public Sushi uptadeSushi(Sushi sushi, MultipartFile imageFile,
-                             Long id, HttpSession session) {
+                             Long id ) {
 
-        if (session.getAttribute("admin") != null && sushiRepository.existsById(id)) {
+        if (sushiRepository.existsById(id)) {
             Sushi nSushi = sushiRepository.findById(id).orElse(null);
             if (nSushi == null) return null;
 
             if (sushi.getName() != null && !sushi.getName().isBlank()) nSushi.setName(sushi.getName());
             if (sushi.getPrice() != null) nSushi.setPrice(sushi.getPrice());
-            if (sushi.getSeasoning() != null && !sushi.getSeasoning().isBlank()) nSushi.setSeasoning(sushi.getSeasoning());
+            if (sushi.getSeasoning() != null && !sushi.getSeasoning().isBlank())
+                nSushi.setSeasoning(sushi.getSeasoning());
             if (sushi.getType() != null && !sushi.getType().isBlank()) nSushi.setType(sushi.getType());
 
             if (imageFile != null && !imageFile.isEmpty()) {
@@ -105,37 +87,43 @@ public class AdminService {
         return null;
     }
 
-    // 📂 Helper funksiyalar
     private void deleteImg(String img) {
         if (img == null) return;
         Path filePath = Paths.get(uploadDir).resolve(Paths.get(img).getFileName().toString());
-        try { Files.deleteIfExists(filePath); }
-        catch (IOException e) { throw new RuntimeException(e); }
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String addImage(MultipartFile imageFile) {
         String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
         Path filePath = Paths.get(uploadDir).resolve(fileName);
-        try { Files.write(filePath, imageFile.getBytes()); }
-        catch (IOException e) { return null; }
+        try {
+            Files.write(filePath, imageFile.getBytes());
+        } catch (IOException e) {
+            return null;
+        }
         return fileName;
     }
+
     public boolean register(Admin admin) {
-            if (adminRepository.findByNick(admin.getNick()).isPresent()) {
-                throw new RuntimeException("Admin with this nick already exists!");
-            }
-
-            // Password-u hash et
-            admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-
-            // Default role
-            if (admin.getRole() == null) {
-                admin.setRole(Role.ADMIN);
-            }
-
-            adminRepository.save(admin);
-            return true;
+        if (adminRepository.findByNick(admin.getNick()).isPresent()) {
+            throw new RuntimeException("Admin with this nick already exists!");
         }
+
+        // Password-u hash et
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+
+        // Default role
+        if (admin.getRole() == null) {
+            admin.setRole(Role.ADMIN);
+        }
+
+        adminRepository.save(admin);
+        return true;
     }
+}
 
 

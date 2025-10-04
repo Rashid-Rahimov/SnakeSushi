@@ -23,7 +23,7 @@ public class Sushi {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Sushi sushi = (Sushi) o;
-        return Double.compare(price, sushi.price) == 0 && Objects.equals(id, sushi.id) && Objects.equals(name, sushi.name);
+        return Objects.equals(id, sushi.id);
     }
 
     @Override
