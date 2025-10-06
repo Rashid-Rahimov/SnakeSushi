@@ -21,19 +21,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5501", allowCredentials = "true")
 public class AdminController {
 
     private final AdminService adminService;
     private final AdminRepository adminRepository;
 
+    /*
     @PostMapping("/register")
     public boolean register(@RequestBody Admin admin) {
 
-     return adminService.login(admin);
+     return adminService.register(admin);
 
 
     }
+     */
 
     // 🔓 logout açıq
     @PostMapping("/logout")
@@ -47,8 +48,8 @@ public class AdminController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<Sushi> findAll(HttpSession session) {
-        return adminService.findAll(session);
+    public List<Sushi> findAll() {
+        return adminService.findAll();
     }
 
     // 🔒 yalnız ADMIN əlavə edə bilər
@@ -62,17 +63,17 @@ public class AdminController {
 
     // 🔒 yalnız ADMIN silə bilər
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping
-    public boolean deleteById(@RequestParam Long id, HttpSession session) {
-        return adminService.deleteById(id, session);
+    @DeleteMapping("/{id}")
+    public boolean deleteById(@PathVariable Long id) {
+        return adminService.deleteById(id);
     }
 
     // 🔒 yalnız ADMIN update edə bilər
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Sushi uptadeSushi(@RequestPart("sushi") Sushi sushi,
                              @RequestPart(value = "image", required = false) MultipartFile imageFile,
-                             @RequestPart("id") Long id,
+                             @PathVariable Long id,
                              HttpSession session) {
         return adminService.uptadeSushi(sushi, imageFile, id, session);
     }
