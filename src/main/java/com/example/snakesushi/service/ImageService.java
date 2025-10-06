@@ -12,10 +12,14 @@ public class ImageService {
     private final ImageRepository repository;
 
     public byte[] getImage(long id) {
-        return repository.exists(id) ? repository.getImage(id) : null;
+        return repository.exists(id) ?
+                repository.getImage(id) :
+                null;
     }
 
     public MediaType getMediaType(long id) {
-        return repository.exists(id) ? new MediaType("image", repository.getType(id)) : null;
+        return repository.exists(id) ?
+                new MediaType("image", repository.getType(id)) :
+                null;
     }
 }

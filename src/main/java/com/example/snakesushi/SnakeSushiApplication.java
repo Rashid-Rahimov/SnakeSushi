@@ -8,8 +8,5 @@ public class SnakeSushiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SnakeSushiApplication.class, args);
-
     }
-
-
 }

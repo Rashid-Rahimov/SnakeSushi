@@ -11,12 +11,12 @@ import java.util.List;
 @RequestMapping("/menu")
 @RequiredArgsConstructor
 public class SushiController {
+
     private final SushiService service;
 
     @GetMapping
     public List<Sushi> getMenu() {
         return service.findAll();
     }
-
 }
 

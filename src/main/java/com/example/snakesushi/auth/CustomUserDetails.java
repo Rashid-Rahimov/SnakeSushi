@@ -10,11 +10,11 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
+
     private Long id;
     private String username;
     private String password;
     private List<GrantedAuthority> roles = new ArrayList<>();
-
 
     public CustomUserDetails(Admin admin) {
         this.id = admin.getId();
@@ -26,7 +26,6 @@ public class CustomUserDetails implements UserDetails {
     public Long getId () {
         return id;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

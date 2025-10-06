@@ -22,7 +22,11 @@ public class ImageRepository {
 
     public byte[] getImage(long id) {
         if (!exists(id)) return null;
-        Path path = Paths.get(String.format("%s/%s", uploadDir, getImageNameById(id)));
+        Path path = Paths.get(String.format(
+                "%s/%s",
+                uploadDir,
+                getImageNameById(id)
+        ));
         try {
 
             return Files.readAllBytes(path);
@@ -33,7 +37,12 @@ public class ImageRepository {
 
     public void add(long id, ImgType type, byte[] data) {
         if (id <= 0) throw new ImageException("ID must be positive", 400);
-        Path filePath = Paths.get(String.format("%s/%d.%s",uploadDir, id, mapType(type)));
+        Path filePath = Paths.get(String.format(
+                "%s/%d.%s",
+                uploadDir,
+                id,
+                mapType(type)
+        ));
         try {
             Files.write(filePath, data);
         } catch (IOException e) {
@@ -46,7 +55,11 @@ public class ImageRepository {
         if (!exists(id)) {
             throw new ImageException("No image found for the given ID.", 404);
         }
-        Path path = Paths.get(String.format("%s/%s", uploadDir, getImageNameById(id)));
+        Path path = Paths.get(String.format(
+                "%s/%s",
+                uploadDir,
+                getImageNameById(id)
+        ));
         try {
             if (!Files.deleteIfExists(path)) {
                 throw new ImageException("Unknown server error!", 500);
@@ -58,6 +71,7 @@ public class ImageRepository {
 
     public boolean exists(long id) {
         if (id <= 0) throw new ImageException("ID must be positive", 400);
+
         return getAllImageIds()
                 .stream()
                 .anyMatch(item -> item == id);
@@ -65,6 +79,7 @@ public class ImageRepository {
 
     public String getImageNameById(long id) {
         if (id <= 0) throw new ImageException("ID must be positive", 400);
+
         return String.format("%d.%s", id, getType(id));
     }
 
@@ -73,12 +88,11 @@ public class ImageRepository {
 
         return getAllImageNames()
                 .stream()
-                .filter(name -> Long
-                        .parseLong(
-                                name.substring(0, name.lastIndexOf('.'))
-                        ) == id)
-                .map(name ->
-                        name.substring(name.lastIndexOf('.') + 1)
+                .filter(name -> Long.parseLong(
+                        name.substring(0, name.lastIndexOf('.'))
+                ) == id)
+                .map(name -> name
+                        .substring(name.lastIndexOf('.') + 1)
                 )
                 .findAny()
                 .orElseThrow(() -> new ImageException("Unknown server error!", 500));
@@ -95,8 +109,8 @@ public class ImageRepository {
 
     private List<String> getAllImageNames() {
         List<String> list = new LinkedList<>();
-        Path uploadDirPath = Paths.get(uploadDir);
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(uploadDirPath)) {
+        Path dir = Paths.get(uploadDir);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path path : stream) {
                 list.add(path.getFileName().toString());
             }
@@ -116,11 +130,12 @@ public class ImageRepository {
     }
 
     public ImgType mapType(@NonNull String type) {
+        String errorMessage = "Image file type does not support";
         return switch (type) {
             case "png" -> ImgType.PNG;
             case "jpg" -> ImgType.JPG;
             case "webp" -> ImgType.WEBP;
-            default -> throw new ImageException("Image file type does not support", 400);
+            default -> throw new ImageException(errorMessage, 400);
         };
     }
 }

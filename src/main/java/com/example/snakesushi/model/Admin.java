@@ -8,11 +8,13 @@ import lombok.Data;
 @Entity
 @Table(name = "admin")
 public class Admin {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nick;
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 }
